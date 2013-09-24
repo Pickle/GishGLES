@@ -79,7 +79,11 @@ void mainmenu(void)
 
   drawtext(TXT_LOADING,(320|TEXT_CENTER),448,16,1.0f,1.0f,1.0f,1.0f);
 
-  SDL_GL_SwapBuffers();
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
+    SDL_GL_SwapBuffers();
+#endif
 
   for (count=0;count<64;count++)
     {
@@ -320,13 +324,19 @@ void mainmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
+#if !defined(USE_GLES)
     if (menuitem[5].active)
       {
       launchwebpage("www.crypticsea.com");
       menuitem[5].active=0;
       }
+#endif
     if (menuitem[4].active)
       {
       //game.songnum=-1;
@@ -468,7 +478,11 @@ void versusmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     for (count=1;count<=7;count++)
     if (menuitem[count].active)
@@ -528,7 +542,11 @@ void storyscreen(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     simcount=0;
     while (SDL_GetTicks()-simtimer>20 && simcount<5)
@@ -740,7 +758,11 @@ void introscreen(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     simcount=0;
     while (SDL_GetTicks()-simtimer>20 && simcount<5)

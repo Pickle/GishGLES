@@ -123,7 +123,11 @@ void versusmodemenu(int versusnum)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
 	// Is item clicked?
 	if (!(menuitem[1].active || menuitem[2].active || menuitem[3].active || menuitem[4].active || menuitem[5].active || menuitem[6].active))

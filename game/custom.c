@@ -105,7 +105,11 @@ void custommenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (menuitem[1].active)
       {
@@ -228,7 +232,11 @@ void loadlevelmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     for (count=1;count<=24;count++)
     if (pagenum+count-1<numoffiles)
@@ -328,7 +336,11 @@ void playcampaignmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     for (count=1;count<=24;count++)
     if (pagenum+count-1<numoffiles)
@@ -395,7 +407,11 @@ void campaignmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (menuitem[1].active || menuitem[2].active)
       {
@@ -634,7 +650,11 @@ void newmappackmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (menuitem[2].active)
       {

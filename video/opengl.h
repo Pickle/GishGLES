@@ -38,8 +38,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifdef LINUX
+#if defined(USE_GLES)
+#include <GLES/gl.h>
+#include "../egl/eglport.h"
+
+#define GL_CLAMP GL_CLAMP_TO_EDGE
+#define glFrustum glFrustumf
+#define glOrtho glOrthof
+#define glMultiTexCoord2fARB(tex,coord0,coord1) glMultiTexCoord4f(tex,coord0,coord1,0,1)
+#define GL_TEXTURE0_ARB GL_TEXTURE0
+#define GL_TEXTURE1_ARB GL_TEXTURE1
+#define glActiveTextureARB glActiveTexture
+
+#else
 #include <GL/gl.h>
 #include <GL/glext.h>
+#endif /* #if defined(USE_GLES) */
 #endif
 
 void loadglextentions(void);

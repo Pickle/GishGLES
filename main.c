@@ -130,6 +130,7 @@ int main (int argc,char *argv[])
 
   listvideomodes();
 
+#if !defined(USE_GLES)
   SDL_WM_SetCaption("Gish","SDL");
   SDL_WM_SetIcon(SDL_LoadBMP("gish.bmp"),iconmask);
 
@@ -150,11 +151,30 @@ int main (int argc,char *argv[])
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,windowinfo.depthbits);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,windowinfo.stencilbits);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+#endif
 
+    printf( "Main.c Opening screen %dx%dx%d\n", windowinfo.resolutionx, windowinfo.resolutiony, windowinfo.bitsperpixel );
+
+#if defined(USE_GLES)
+    if (windowinfo.fullscreen)
+      screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_SWSURFACE|SDL_FULLSCREEN);
+    else
+      screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_SWSURFACE);
+#else
   if (windowinfo.fullscreen)
-    SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL|SDL_FULLSCREEN);
+    screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL|SDL_FULLSCREEN);
   else
-    SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL);
+    screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL);
+#endif
+
+    if(screen == NULL)
+    {
+        printf( "No SDL screen\n" );
+    }
+
+#if defined(USE_GLES)
+    EGL_Open( windowinfo.resolutionx, windowinfo.resolutiony );
+#endif
 
   loadglextentions();
 
@@ -213,8 +233,11 @@ int main (int argc,char *argv[])
   if (config.sound)
     shutdownaudio();
 
+#if defined(USE_GLES)
+    EGL_Close();
+#else
   SDL_WM_IconifyWindow();
-
+#endif
   SDL_Quit();
 
   return(0);

@@ -118,7 +118,11 @@ void mappackpostgamemenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     simcount=0;
     while (SDL_GetTicks()-simtimer>20 && simcount<5)
@@ -200,7 +204,11 @@ void mappackpregamemenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (menuitem[1].active)
       {
@@ -311,7 +319,11 @@ void mappackendingmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
     }
 
   resetmenuitems();

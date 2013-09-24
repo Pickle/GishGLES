@@ -264,7 +264,7 @@ void rendershadows(void)
       blocknum=level.grid[count][count2];
       if (level.gridmod[count][count2]!=0)
         blocknum=0;
-  
+
       if (blocknum!=0)
         {
         for (count3=0;count3<block[blocknum].numoflines;count3++)
@@ -289,31 +289,62 @@ void rendershadows(void)
             normalizevector(vec2,vec2);
             normalizevector(vec3,vec3);
 
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+        GLfloat quad[12];
+#else
             glBegin(GL_QUADS);
-
+#endif
             vec[0]=(float)count2+block[blocknum].line[count3][0];
             vec[1]=(float)count+block[blocknum].line[count3][1];
             vec[2]=0.0f;
+#if defined(USE_GLES)
+            quad[0] = vec[0];
+            quad[1] = vec[1];
+            quad[2] = vec[2];
+#else
             glVertex3fv(vec);
-        
+#endif
+
             vec[0]=(float)count2+block[blocknum].line[count3][2];
             vec[1]=(float)count+block[blocknum].line[count3][3];
             vec[2]=0.0f;
+#if defined(USE_GLES)
+            quad[3] = vec[0];
+            quad[4] = vec[1];
+            quad[5] = vec[2];
+#else
             glVertex3fv(vec);
-
+#endif
             vec[0]=(float)count2+block[blocknum].line[count3][2];
             vec[1]=(float)count+block[blocknum].line[count3][3];
             vec[2]=0.0f;
             scaleaddvectors(vec,vec,vec3,-frame.light[lightcount].intensity*0.55f);
+#if defined(USE_GLES)
+            quad[6] = vec[0];
+            quad[7] = vec[1];
+            quad[8] = vec[2];
+#else
             glVertex3fv(vec);
-
+#endif
             vec[0]=(float)count2+block[blocknum].line[count3][0];
             vec[1]=(float)count+block[blocknum].line[count3][1];
             vec[2]=0.0f;
             scaleaddvectors(vec,vec,vec2,-frame.light[lightcount].intensity*0.55f);
+#if defined(USE_GLES)
+            quad[9] = vec[0];
+            quad[10] = vec[1];
+            quad[11] = vec[2];
+#else
             glVertex3fv(vec);
-    
+#endif
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
             glEnd();
+#endif
             }
           }
         }
@@ -339,21 +370,51 @@ void rendershadows(void)
             normalizevector(vec2,vec2);
             normalizevector(vec3,vec3);
 
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+        GLfloat quad[12];
+#else
             glBegin(GL_QUADS);
-
+#endif
             scaleaddvectors(vec,particle[object[count].particle[count2]].position,vec2,-0.0f);
+#if defined(USE_GLES)
+            quad[0] = vec[0];
+            quad[1] = vec[1];
+            quad[2] = vec[2];
+#else
             glVertex3fv(vec);
-
+#endif
             scaleaddvectors(vec,particle[object[count].particle[((count2+1)&3)]].position,vec3,-0.0f);
+#if defined(USE_GLES)
+            quad[3] = vec[0];
+            quad[4] = vec[1];
+            quad[5] = vec[2];
+#else
             glVertex3fv(vec);
-
+#endif
             scaleaddvectors(vec,particle[object[count].particle[((count2+1)&3)]].position,vec3,-frame.light[lightcount].intensity*0.55f);
+#if defined(USE_GLES)
+            quad[6] = vec[0];
+            quad[7] = vec[1];
+            quad[8] = vec[2];
+#else
             glVertex3fv(vec);
-
+#endif
             scaleaddvectors(vec,particle[object[count].particle[count2]].position,vec2,-frame.light[lightcount].intensity*0.55f);
+#if defined(USE_GLES)
+            quad[9] = vec[0];
+            quad[10] = vec[1];
+            quad[11] = vec[2];
+#else
             glVertex3fv(vec);
-
+#endif
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
             glEnd();
+#endif
             }
           }
         }
@@ -382,11 +443,12 @@ void renderobjectspecular(int objectnum)
 
   for (lightcount=0;lightcount<frame.numoflights;lightcount++)
     {
+#if !defined(USE_GLES)
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE_ARB);
     glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB_ARB,GL_DOT3_RGBA_ARB);
     glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB_ARB,GL_TEXTURE);
     glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB_ARB,GL_PRIMARY_COLOR_ARB);
-
+#endif
     //glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_TRUE);
 
     glEnable(GL_ALPHA_TEST);
@@ -401,6 +463,7 @@ void renderobjectspecular(int objectnum)
     glBindTexture(GL_TEXTURE_2D,texture[330].glname);
 
     glActiveTextureARB(GL_TEXTURE1_ARB);
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texture[335].glname);
 
@@ -420,6 +483,8 @@ void renderobjectspecular(int objectnum)
 
     for (count=0;count<32;count++)
       {
+#if defined(USE_GLES)
+#else
       glBegin(GL_TRIANGLES);
 
       subtractvectors(vec,frame.light[lightcount].position,objectrender[objectnum].vertex[count]);
@@ -480,8 +545,9 @@ void renderobjectspecular(int objectnum)
       glTexCoord2f(0.5f,0.5f);
       glMultiTexCoord2fARB(GL_TEXTURE1_ARB,0.0f,0.0f);
       glVertex3fv(objectrender[objectnum].vertex[32]);
-  
+
       glEnd();
+#endif
       }
     /*
     glAlphaFunc(GL_GREATER,1.0f-1.0f/32.0f-1.0f/32.0f);
@@ -559,7 +625,7 @@ void renderobjectspecular(int objectnum)
       glTexCoord2f(0.5f,0.5f);
       glMultiTexCoord2fARB(GL_TEXTURE1_ARB,0.0f,0.0f);
       glVertex3fv(objectrender[objectnum].vertex[32]);
-  
+
       glEnd();
       }
     */
@@ -570,7 +636,7 @@ void renderobjectspecular(int objectnum)
     glDisable(GL_ALPHA_TEST);
 
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-   
+
     glDisable(GL_STENCIL_TEST);
 
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);

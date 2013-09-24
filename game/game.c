@@ -117,7 +117,11 @@ void gameloop(void)
     glStencilMask(0);
 
     setuptextdisplay();
+#if defined(USE_GLES)
+    glColor4f(level.ambient[3][0], level.ambient[3][1], level.ambient[3][2], 1.0f);
+#else
     glColor3fv(level.ambient[3]);
+#endif
     if (level.background[0]!=0)
       displaybackground(660);
 
@@ -247,7 +251,7 @@ void gameloop(void)
         {
         if (game.dialogdelay>0)
           game.dialogdelay--;
-  
+
         count2=0;
         if (game.dialogdelay==0)
           count2=1;
@@ -259,7 +263,7 @@ void gameloop(void)
         if (control[0].button[count]!=-1)
         if (joystick[control[0].joysticknum].button[control[0].button[count]] && !prevjoystick[control[0].joysticknum].button[control[0].button[count]])
           count2=1;
-  
+
         if (count2==1)
           {
           game.dialog--;
@@ -420,29 +424,48 @@ void gameloop(void)
     if (game.oldschool==1 || game.oldschool==2)// || game.oldschool==3)
       {
       setuptextdisplay();
-  
+
       if (game.oldschool==1)// || game.oldschool==3)
         glBindTexture(GL_TEXTURE_2D,texture[334].glname);
       if (game.oldschool==2)
         glBindTexture(GL_TEXTURE_2D,texture[333].glname);
-  
+
+#if defined(USE_GLES)
+    glColor4f(1.0f,1.0f,1.0f,1.0f);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        GLfloat quad[] = {  -1.0f,0.75f,-1.0f,
+                            1.0f,0.75f,-1.0f,
+                            1.0f,-0.75f,-1.0f,
+                            -1.0f,-0.75f,-1.0f };
+        GLfloat tx[] = {    0,1,
+                            1,1,
+                            1,0,
+                            0,0};
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glTexCoordPointer(2, GL_FLOAT, 0, tx);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glBegin(GL_QUADS);
-    
+
       glColor4f(1.0f,1.0f,1.0f,1.0f);
-    
+
       glTexCoord2f(0.0f,1.0f);
       glVertex3f(-1.0f,0.75f,-1.0f);
-    
+
       glTexCoord2f(1.0f,1.0f);
       glVertex3f(1.0f,0.75f,-1.0f);
-    
+
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(1.0f,-0.75f,-1.0f);
-    
+
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(-1.0f,-0.75f,-1.0f);
-    
+
       glEnd();
+#endif
       }
 
     setuptextdisplay();
@@ -451,37 +474,57 @@ void gameloop(void)
       {
       glDisable(GL_TEXTURE_2D);
 
+#if !defined(USE_GLES)
       glBegin(GL_QUADS);
-    
+#endif
       glColor4f(0.0f,0.0f,0.0f,(float)(100-game.exitdelay)*0.01f);
-    
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+        GLfloat quad[] = {  -1.0f,0.75f,-1.0f,
+                            1.0f,0.75f,-1.0f,
+                            1.0f,-0.75f,-1.0f,
+                            -1.0f,-0.75f,-1.0f };
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glVertex3f(-1.0f,0.75f,-1.0f);
       glVertex3f(1.0f,0.75f,-1.0f);
       glVertex3f(1.0f,-0.75f,-1.0f);
       glVertex3f(-1.0f,-0.75f,-1.0f);
-    
-      glEnd();
 
+      glEnd();
+#endif
       glEnable(GL_TEXTURE_2D);
       }
     if (game.exit==GAMEEXIT_DIED)
       {
       glDisable(GL_TEXTURE_2D);
 
+#if !defined(USE_GLES)
       glBegin(GL_QUADS);
-
+#endif
       if (game.exitdelay>50)
         glColor4f(0.5f,0.0f,0.0f,(float)(100-game.exitdelay)*0.01f);
       else
         glColor4f(1.0f-(float)(100-game.exitdelay)*0.01f,0.0f,0.0f,(float)(100-game.exitdelay)*0.01f);
-    
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+        GLfloat quad[] = {  -1.0f,0.75f,-1.0f,
+                            1.0f,0.75f,-1.0f,
+                            1.0f,-0.75f,-1.0f,
+                            -1.0f,-0.75f,-1.0f };
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glVertex3f(-1.0f,0.75f,-1.0f);
       glVertex3f(1.0f,0.75f,-1.0f);
       glVertex3f(1.0f,-0.75f,-1.0f);
       glVertex3f(-1.0f,-0.75f,-1.0f);
-    
-      glEnd();
 
+      glEnd();
+#endif
       glEnable(GL_TEXTURE_2D);
       }
 
@@ -508,18 +551,27 @@ void gameloop(void)
     if (game.exitdelay<20)
       {
       glDisable(GL_TEXTURE_2D);
-
+#if !defined(USE_GLES)
       glBegin(GL_QUADS);
-    
+#endif
       glColor4f(0.0f,0.0f,0.0f,(float)(20-game.exitdelay)*0.05f);
-    
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+        GLfloat quad[] = {  -1.0f,0.75f,-1.0f,
+                            1.0f,0.75f,-1.0f,
+                            1.0f,-0.75f,-1.0f,
+                            -1.0f,-0.75f,-1.0f };
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glVertex3f(-1.0f,0.75f,-1.0f);
       glVertex3f(1.0f,0.75f,-1.0f);
       glVertex3f(1.0f,-0.75f,-1.0f);
       glVertex3f(-1.0f,-0.75f,-1.0f);
-    
-      glEnd();
 
+      glEnd();
+#endif
       glEnable(GL_TEXTURE_2D);
       }
     if (movie.record)
@@ -589,10 +641,14 @@ void gameloop(void)
         deletesound(count);
 
       setuptextdisplay();
-    
+
       drawtext(TXT_LOADINGEDITOR,(320|TEXT_CENTER),240,16,1.0f,1.0f,1.0f,1.0f);
-    
-      SDL_GL_SwapBuffers();
+
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
+    SDL_GL_SwapBuffers();
+#endif
 
       for (count=0;count<20;count++)
       if (animation[count].loaded==0)
@@ -607,7 +663,11 @@ void gameloop(void)
       simtimer=SDL_GetTicks();
       }
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if ((SDL_GetTicks()-frametimer)!=0)
       fps=1000/(SDL_GetTicks()-frametimer);
@@ -735,7 +795,7 @@ void simulation(void)
           vec[1]=(float)((rnd()&255)-127)/1270.0f;
           vec[2]=0.0f;
           addvectors(vec,vec,object[count].velocity);
-  
+
           createparticle(5,object[count].position,vec,0.25f,-1,100+(rnd()&63));
           particle[numofparticles-1].rendersize=0.125+(float)(rnd()&127)/1000.0f;
           if (count==0)

@@ -88,34 +88,69 @@ void edittextures(void)
 
       glBindTexture(GL_TEXTURE_2D,texture[count+textureedit.pagenum*32].glname);
 
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        GLfloat quadA[] = { 0,0,-1.0f,
+                            0,0,-1.0f,
+                            0,0,-1.0f,
+                            0,0,-1.0f };
+        GLfloat txA[] = {   0,0,
+                            1,0,
+                            1,1,
+                            0,1};
+#else
       glBegin(GL_QUADS);
-
+#endif
       vec[0]=(count&7)*64+4;
       vec[1]=16+4+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadA[0] = vec[0];
+        quadA[1] = vec[1];
+#else
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=(count&7)*64+60;
       vec[1]=16+4+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadA[3] = vec[0];
+        quadA[4] = vec[1];
+#else
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=(count&7)*64+60;
       vec[1]=16+60+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadA[6] = vec[0];
+        quadA[7] = vec[1];
+#else
       glTexCoord2f(1.0f,1.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=(count&7)*64+4;
       vec[1]=16+60+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadA[9] = vec[0];
+        quadA[10] = vec[1];
+#else
       glTexCoord2f(0.0f,1.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quadA);
+        glTexCoordPointer(2, GL_FLOAT, 0, txA);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glEnd();
-
+#endif
 	  if (texture[count+textureedit.pagenum*32].filename[0])
 	  {
 		  char cleanFilename[256];
@@ -126,8 +161,8 @@ void edittextures(void)
 			  cleanFilename[filenameLength-4] = '\0';
 		  else
 			  cleanFilename[filenameLength] = '\0';
-		  
-		  
+
+
 		  drawtext(cleanFilename,
 			  ((count&7)*64+32)|TEXT_CENTER, 14+60+(count>>3)*64,8,1.0f,1.0f,1.0f,1.0f);
 	  }
@@ -136,66 +171,138 @@ void edittextures(void)
       {
       glBindTexture(GL_TEXTURE_2D,texture[1792+count+textureedit.tilepagenum*16].glname);
 
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        GLfloat quadB[] = { 0,0,-1.0f,
+                            0,0,-1.0f,
+                            0,0,-1.0f,
+                            0,0,-1.0f };
+        GLfloat txB[] = {   0,0,
+                            1,0,
+                            1,1,
+                            0,1};
+#else
       glBegin(GL_QUADS);
-
+#endif
       vec[0]=(count&7)*64+4;
       vec[1]=320+4+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadB[0] = vec[0];
+        quadB[1] = vec[1];
+#else
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=(count&7)*64+60;
       vec[1]=320+4+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadB[3] = vec[0];
+        quadB[4] = vec[1];
+#else
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=(count&7)*64+60;
       vec[1]=320+60+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadB[6] = vec[0];
+        quadB[7] = vec[1];
+#else
       glTexCoord2f(1.0f,1.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=(count&7)*64+4;
       vec[1]=320+60+(count>>3)*64;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadB[9] = vec[0];
+        quadB[10] = vec[1];
+#else
       glTexCoord2f(0.0f,1.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quadB);
+        glTexCoordPointer(2, GL_FLOAT, 0, txB);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glEnd();
+#endif
       }
 
     if (textureedit.texturenum!=-1)
       {
       glBindTexture(GL_TEXTURE_2D,texture[textureedit.texturenum].glname);
 
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        GLfloat quadC[] = { 0,0,-1.0f,
+                            0,0,-1.0f,
+                            0,0,-1.0f,
+                            0,0,-1.0f };
+        GLfloat txC[] = {   0,0,
+                            1,0,
+                            1,1,
+                            0,1};
+#else
       glBegin(GL_QUADS);
-
+#endif
       vec[0]=mouse.x-28;
       vec[1]=mouse.y-28;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadC[0] = vec[0];
+        quadC[1] = vec[1];
+#else
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=mouse.x+28;
       vec[1]=mouse.y-28;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadC[3] = vec[0];
+        quadC[4] = vec[1];
+#else
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=mouse.x+28;
       vec[1]=mouse.y+28;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadC[6] = vec[0];
+        quadC[7] = vec[1];
+#else
       glTexCoord2f(1.0f,1.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
       vec[0]=mouse.x-28;
       vec[1]=mouse.y+28;
       convertscreenvertex(vec,640,480);
+#if defined(USE_GLES)
+        quadC[9] = vec[0];
+        quadC[10] = vec[1];
+#else
       glTexCoord2f(0.0f,1.0f);
       glVertex3f(vec[0],vec[1],-1.0f);
-
+#endif
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quadC);
+        glTexCoordPointer(2, GL_FLOAT, 0, txC);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glEnd();
+#endif
       }
 
     drawtext(TXT_TILESET":/i",0,292,16,1.0f,1.0f,1.0f,1.0f,textureedit.tileset);
@@ -204,7 +311,11 @@ void edittextures(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (keyboard[SCAN_LFT_BRACKET] && !prevkeyboard[SCAN_LFT_BRACKET])
     if (textureedit.tileset>0)
@@ -308,7 +419,11 @@ void edittextures(void)
 
 				drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
-				SDL_GL_SwapBuffers();
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
+    SDL_GL_SwapBuffers();
+#endif
 			}
 			if (menuitem[1].active)
 			{
@@ -516,7 +631,7 @@ void loadleveltiles(char *filename)
           if ((texture[count].sizey&(texture[count].sizey-1))==0)
             setuptexture(count);
           }
-  
+
         fread2(&block[count].numoflines,4,1,fp);
         if (block[count].numoflines<0 || block[count].numoflines>=64)
           {
@@ -629,7 +744,7 @@ void loadleveltiles(char *filename)
           if ((texture[count].sizey&(texture[count].sizey-1))==0)
             setuptexture(count);
           }
-  
+
         fread2(&block[count].numoflines,4,1,fp);
         if (block[count].numoflines<0 || block[count].numoflines>=64)
           {

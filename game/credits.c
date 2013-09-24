@@ -113,7 +113,7 @@ void creditsmenu(void)
       else
         secretsequence=0;
       }
-  
+
     updateogg();
     checkmusic();
     game.songnum=8;
@@ -182,7 +182,11 @@ void creditsmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (menuitem[1].active)
       {

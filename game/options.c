@@ -512,7 +512,11 @@ void optionsmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     for (count=0;count<KEYALIAS_LENGTH;count++)
     if (menuitem[count+1].active)
@@ -749,7 +753,11 @@ void videooptionsmenu(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
     }
 
   if (menuitem[1].active)
@@ -767,6 +775,7 @@ void videooptionsmenu(void)
     windowinfo.fullscreen=fullscreen;
     windowinfo.bitsperpixel=bitsperpixel;
   
+#if !defined(USE_GLES)
     if (windowinfo.bitsperpixel==16)
       {
       SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
@@ -781,11 +790,26 @@ void videooptionsmenu(void)
       SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
       SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,8);
       }
+#endif
   
+    printf( "options.c Opening screen %dx%dx%d\n", windowinfo.resolutionx, windowinfo.resolutiony, windowinfo.bitsperpixel );
+
+#if defined(USE_GLES)
     if (windowinfo.fullscreen)
-      SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL|SDL_FULLSCREEN);
+      screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_SWSURFACE|SDL_FULLSCREEN);
     else
-      SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL);
+      screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_SWSURFACE);
+#else
+    if (windowinfo.fullscreen)
+      screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL|SDL_FULLSCREEN);
+    else
+      screen = SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL);
+#endif
+
+    if(screen == NULL)
+    {
+        printf( "No SDL screen\n" );
+    }
 
     for (count=0;count<2048;count++)
       if (texture[count].sizex!=0)
@@ -801,53 +825,106 @@ void drawsliderbars(void)
 
   glDisable(GL_TEXTURE_2D);
 
+#if defined(USE_GLES)
+    GLfloat quad[8];
+    glEnableClientState(GL_VERTEX_ARRAY);
+#else
   glBegin(GL_QUADS);
-
-  if (option.sound)
-    {
+#endif
+  if (option.sound)    {
     glColor4f(0.25f,0.25f,0.25f,1.0f);
 
     vec[0]=160.0f;
     vec[1]=40.0f-1.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[0] = vec[0];
+    quad[1] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
   
     vec[0]=160.0f+128.0f;
     vec[1]=40.0f-5.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[2] = vec[0];
+    quad[3] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
   
     vec[0]=160.0f+128.0f;
     vec[1]=40.0f+5.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[4] = vec[0];
+    quad[5] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
   
     vec[0]=160.0f;
     vec[1]=40.0f+1.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[6] = vec[0];
+    quad[7] = vec[1];
+
+        glVertexPointer(2, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
     glVertex3fv(vec);
+#endif
 
     glColor4f(0.75f,0.75f,0.75f,1.0f);
 
     vec[0]=160.0f+option.soundvolume*128.0f-2.0f;
     vec[1]=40.0f-7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    quad[0] = vec[0];
+    quad[1] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
 
     vec[0]=160.0f+option.soundvolume*128.0f+2.0f;
     vec[1]=40.0f-7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[2] = vec[0];
+    quad[3] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
 
     vec[0]=160.0f+option.soundvolume*128.0f+2.0f;
     vec[1]=40.0f+7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[4] = vec[0];
+    quad[5] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
 
     vec[0]=160.0f+option.soundvolume*128.0f-2.0f;
     vec[1]=40.0f+7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[6] = vec[0];
+    quad[7] = vec[1];
+
+        glVertexPointer(2, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
     glVertex3fv(vec);
+#endif
     }
   if (option.music)
     {
@@ -856,48 +933,101 @@ void drawsliderbars(void)
     vec[0]=160.0f;
     vec[1]=56.0f-1.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    quad[0] = vec[0];
+    quad[1] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
   
     vec[0]=160.0f+128.0f;
     vec[1]=56.0f-5.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[2] = vec[0];
+    quad[3] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
   
     vec[0]=160.0f+128.0f;
     vec[1]=56.0f+5.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[4] = vec[0];
+    quad[5] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
   
     vec[0]=160.0f;
     vec[1]=56.0f+1.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[6] = vec[0];
+    quad[7] = vec[1];
+
+        glVertexPointer(2, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
     glVertex3fv(vec);
+#endif
 
     glColor4f(0.75f,0.75f,0.75f,1.0f);
 
     vec[0]=160.0f+option.musicvolume*128.0f-2.0f;
     vec[1]=56.0f-7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    quad[0] = vec[0];
+    quad[1] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
 
     vec[0]=160.0f+option.musicvolume*128.0f+2.0f;
     vec[1]=56.0f-7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[2] = vec[0];
+    quad[3] = vec[1];
+#else
     glVertex3fv(vec);
+#endif
 
     vec[0]=160.0f+option.musicvolume*128.0f+2.0f;
     vec[1]=56.0f+7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    quad[4] = vec[0];
+    quad[5] = vec[1];
+#else
     glVertex3fv(vec);
-
+#endif
     vec[0]=160.0f+option.musicvolume*128.0f-2.0f;
     vec[1]=56.0f+7.0f;
     convertscreenvertex(vec,font.sizex,font.sizey);
+
+#if defined(USE_GLES)
+    quad[6] = vec[0];
+    quad[7] = vec[1];
+
+        glVertexPointer(2, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
     glVertex3fv(vec);
+#endif
     }
 
+#if !defined(USE_GLES)
   glEnd();
-
+#endif
   glEnable(GL_TEXTURE_2D);
   }
 
@@ -1347,7 +1477,11 @@ void optionsmenu2(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     for (count=0;count<KEYALIAS_LENGTH;count++)
     if (menuitem[count+1].active)

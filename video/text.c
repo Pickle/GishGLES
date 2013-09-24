@@ -156,8 +156,14 @@ void drawtext(char *textstring,int x,int y,int textsize,float red,float green,fl
     {
     if (textstring2[count]!=127)
       {
+#if defined(USE_GLES)
+    GLfloat quad[12];
+    GLfloat tex[8];
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
       glBegin(GL_QUADS);
-
+#endif
       glColor4f(red,green,blue,alpha);
 
       vec[0]=(float)x+(float)count*(float)textsize;
@@ -167,10 +173,16 @@ void drawtext(char *textstring,int x,int y,int textsize,float red,float green,fl
       texcoord[1]=(float)(textstring2[count]>>4)*16.0f+0.5f;
       texcoord[0]/=256.0f;
       texcoord[1]/=256.0f;
-  
+#if defined(USE_GLES)
+        quad[0] = vec[0];
+        quad[1] = vec[1];
+        quad[2] = vec[2];
+        tex[0] = texcoord[0];
+        tex[1] = texcoord[1];
+#else
       glTexCoord2fv(texcoord);
       glVertex3fv(vec);
-  
+#endif
       vec[0]=(float)x+(float)textsize+(float)(count)*(float)textsize;
       vec[1]=(float)y;
       convertscreenvertex(vec,font.sizex,font.sizey);
@@ -179,9 +191,16 @@ void drawtext(char *textstring,int x,int y,int textsize,float red,float green,fl
       texcoord[0]/=256.0f;
       texcoord[1]/=256.0f;
   
+#if defined(USE_GLES)
+        quad[3] = vec[0];
+        quad[4] = vec[1];
+        quad[5] = vec[2];
+        tex[2] = texcoord[0];
+        tex[3] = texcoord[1];
+#else
       glTexCoord2fv(texcoord);
       glVertex3fv(vec);
-  
+#endif
       vec[0]=(float)x+(float)textsize+(float)(count)*(float)textsize;
       vec[1]=(float)y+(float)textsize;
       convertscreenvertex(vec,font.sizex,font.sizey);
@@ -190,9 +209,16 @@ void drawtext(char *textstring,int x,int y,int textsize,float red,float green,fl
       texcoord[0]/=256.0f;
       texcoord[1]/=256.0f;
   
+#if defined(USE_GLES)
+        quad[6] = vec[0];
+        quad[7] = vec[1];
+        quad[8] = vec[2];
+        tex[4] = texcoord[0];
+        tex[5] = texcoord[1];
+#else
       glTexCoord2fv(texcoord);
       glVertex3fv(vec);
-  
+#endif
       vec[0]=(float)x+(float)(count)*(float)textsize;
       vec[1]=(float)y+(float)textsize;
       convertscreenvertex(vec,font.sizex,font.sizey);
@@ -200,42 +226,88 @@ void drawtext(char *textstring,int x,int y,int textsize,float red,float green,fl
       texcoord[1]=(float)(textstring2[count]>>4)*16.0f+16.0f-0.5f;
       texcoord[0]/=256.0f;
       texcoord[1]/=256.0f;
-  
+#if defined(USE_GLES)
+        quad[9] = vec[0];
+        quad[10] = vec[1];
+        quad[11] = vec[2];
+        tex[6] = texcoord[0];
+        tex[7] = texcoord[1];
+#else
       glTexCoord2fv(texcoord);
       glVertex3fv(vec);
-  
+#endif
+
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glTexCoordPointer(2, GL_FLOAT, 0, tex);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
       glEnd();
+#endif
       }
     else
       {
       glDisable(GL_TEXTURE_2D);
 
+#if defined(USE_GLES)
+    GLfloat quad[12];
+    glEnableClientState(GL_VERTEX_ARRAY);
+#else
       glBegin(GL_QUADS);
-
+#endif
       glColor4f(red,green,blue,alpha);
 
       vec[0]=(float)x+(float)count*(float)textsize;
       vec[1]=(float)y;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+        quad[0] = vec[0];
+        quad[1] = vec[1];
+        quad[2] = vec[2];
+#else
       glVertex3fv(vec);
+#endif
   
       vec[0]=(float)x+(float)textsize+(float)(count)*(float)textsize;
       vec[1]=(float)y;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+        quad[3] = vec[0];
+        quad[4] = vec[1];
+        quad[5] = vec[2];
+#else
       glVertex3fv(vec);
-  
+#endif
       vec[0]=(float)x+(float)textsize+(float)(count)*(float)textsize;
       vec[1]=(float)y+(float)textsize;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+        quad[6] = vec[0];
+        quad[7] = vec[1];
+        quad[8] = vec[2];
+#else
       glVertex3fv(vec);
-  
+#endif
       vec[0]=(float)x+(float)(count)*(float)textsize;
       vec[1]=(float)y+(float)textsize;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+        quad[9] = vec[0];
+        quad[10] = vec[1];
+        quad[11] = vec[2];
+#else
       glVertex3fv(vec);
-  
-      glEnd();
+#endif
 
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
+      glEnd();
+#endif
       glEnable(GL_TEXTURE_2D);
       }
 
@@ -286,37 +358,73 @@ void drawbackground(int texturenum,int x,int y,int sizex,int sizey,int resolutio
 
   glBindTexture(GL_TEXTURE_2D,texture[texturenum].glname);
 
+#if defined(USE_GLES)
+    GLfloat quad[12];
+    GLfloat tex[] = {   0,0,
+                        1,0,
+                        1,1,
+                        0,1 };
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
   glBegin(GL_QUADS);
-
+#endif
   vec[0]=(float)x;
   vec[1]=(float)y;
   convertscreenvertex(vec,resolutionx,resolutiony);
 
+#if defined(USE_GLES)
+        quad[0] = vec[0];
+        quad[1] = vec[1];
+        quad[2] = vec[2];
+#else
   glTexCoord2f(0.0f,0.0f);
   glVertex3fv(vec);
-
+#endif
   vec[0]=(float)(x+sizex);
   vec[1]=(float)y;
   convertscreenvertex(vec,resolutionx,resolutiony);
 
+#if defined(USE_GLES)
+        quad[3] = vec[0];
+        quad[4] = vec[1];
+        quad[5] = vec[2];
+#else
   glTexCoord2f(1.0f,0.0f);
   glVertex3fv(vec);
-
+#endif
   vec[0]=(float)(x+sizex);
   vec[1]=(float)(y+sizey);
   convertscreenvertex(vec,resolutionx,resolutiony);
-
+#if defined(USE_GLES)
+        quad[6] = vec[0];
+        quad[7] = vec[1];
+        quad[8] = vec[2];
+#else
   glTexCoord2f(1.0f,1.0f);
   glVertex3fv(vec);
-
+#endif
   vec[0]=(float)x;
   vec[1]=(float)(y+sizey);
   convertscreenvertex(vec,resolutionx,resolutiony);
-
+#if defined(USE_GLES)
+        quad[9] = vec[0];
+        quad[10] = vec[1];
+        quad[11] = vec[2];
+#else
   glTexCoord2f(0.0f,1.0f);
   glVertex3fv(vec);
+#endif
 
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glTexCoordPointer(2, GL_FLOAT, 0, tex);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
   glEnd();
+#endif
   }
 
 void drawmousecursor(int texturenum,int x,int y,int textsize,float red,float green,float blue,float alpha)
@@ -325,37 +433,72 @@ void drawmousecursor(int texturenum,int x,int y,int textsize,float red,float gre
 
   glBindTexture(GL_TEXTURE_2D,texture[texturenum].glname);
 
+#if defined(USE_GLES)
+    GLfloat quad[12];
+    GLfloat tex[] = {   0,0,
+                        1,0,
+                        1,1,
+                        0,1 };
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
   glBegin(GL_QUADS);
-
+#endif
   vec[0]=(float)x-(float)textsize;
   vec[1]=(float)y-(float)textsize;
   convertscreenvertex(vec,font.sizex,font.sizey);
 
   glColor4f(red,green,blue,alpha);
+#if defined(USE_GLES)
+        quad[0] = vec[0];
+        quad[1] = vec[1];
+        quad[2] = vec[2];
+#else
   glTexCoord2f(0.0f,0.0f);
   glVertex3fv(vec);
-
+#endif
   vec[0]=(float)x+(float)textsize;
   vec[1]=(float)y-(float)textsize;
   convertscreenvertex(vec,font.sizex,font.sizey);
-
+#if defined(USE_GLES)
+        quad[3] = vec[0];
+        quad[4] = vec[1];
+        quad[5] = vec[2];
+#else
   glTexCoord2f(1.0f,0.0f);
   glVertex3fv(vec);
-
+#endif
   vec[0]=(float)x+(float)textsize;
   vec[1]=(float)y+(float)textsize;
   convertscreenvertex(vec,font.sizex,font.sizey);
-
+#if defined(USE_GLES)
+        quad[6] = vec[0];
+        quad[7] = vec[1];
+        quad[8] = vec[2];
+#else
   glTexCoord2f(1.0f,1.0f);
   glVertex3fv(vec);
-
+#endif
   vec[0]=(float)x-(float)textsize;
   vec[1]=(float)y+(float)textsize;
   convertscreenvertex(vec,font.sizex,font.sizey);
-
+#if defined(USE_GLES)
+        quad[9] = vec[0];
+        quad[10] = vec[1];
+        quad[11] = vec[2];
+#else
   glTexCoord2f(0.0f,1.0f);
   glVertex3fv(vec);
+#endif
 
+#if defined(USE_GLES)
+        glVertexPointer(3, GL_FLOAT, 0, quad);
+        glTexCoordPointer(2, GL_FLOAT, 0, tex);
+        glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+#else
   glEnd();
+#endif
   }
 

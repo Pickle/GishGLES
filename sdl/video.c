@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int numofsdlvideomodes;
 _sdlvideomode sdlvideomode[4096];
 
+SDL_Surface* screen = NULL;
+
 void listvideomodes(void)
   {
   int count;
@@ -35,7 +37,11 @@ void listvideomodes(void)
 
   numofsdlvideomodes=0;
 
+#if defined(USE_GLES)
+  sdlmode=SDL_ListModes(NULL,SDL_SWSURFACE|SDL_FULLSCREEN);
+#else
   sdlmode=SDL_ListModes(NULL,SDL_OPENGL|SDL_FULLSCREEN);
+#endif
 
   if (sdlmode==(SDL_Rect **)-1)
     {

@@ -138,7 +138,11 @@ void editlevelrope(void)
     glStencilMask(0);
 
     setuptextdisplay();
+#if defined(USE_GLES)
+    glColor4f(level.ambient[3][0], level.ambient[3][1], level.ambient[3][2], 1.0f);
+#else
     glColor3fv(level.ambient[3]);
+#endif
     if (level.background[0]!=0)
       displaybackground(660);
 
@@ -180,7 +184,11 @@ void editlevelrope(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     vec[0]=view.position[0]+(float)(mouse.x-320)/32.0f;
     vec[1]=view.position[1]+(float)(240-mouse.y)/32.0f;
@@ -299,6 +307,8 @@ void renderropeedit(void)
 
   glDisable(GL_TEXTURE_2D);
 
+#if defined(USE_GLES)
+#else
   glBegin(GL_LINES);
 
   glColor4f(0.0f,1.0f,0.0f,1.0f);
@@ -338,6 +348,7 @@ void renderropeedit(void)
     }
 
   glEnd();
+#endif
 
   glEnable(GL_TEXTURE_2D);
   }

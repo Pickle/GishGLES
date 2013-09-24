@@ -69,7 +69,11 @@ void editlevelobjects(void)
     glStencilMask(0);
 
     setuptextdisplay();
+#if defined(USE_GLES)
+    glColor4f(level.ambient[3][0], level.ambient[3][1], level.ambient[3][2], 1.0f);
+#else
     glColor3fv(level.ambient[3]);
+#endif
     if (level.background[0]!=0)
       displaybackground(660);
 
@@ -144,7 +148,11 @@ void editlevelobjects(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (mouse.x<512 || mouse.y>224)
       {
@@ -167,7 +175,7 @@ void editlevelobjects(void)
             vec[2]=0.0f;
             }
 
-    
+
           memset(&level.object[level.numofobjects],0,sizeof(level.object[level.numofobjects]));
           level.object[level.numofobjects].type=editor.objecttype;
           level.object[level.numofobjects].link=-1;
@@ -226,9 +234,9 @@ void editlevelobjects(void)
         vec[0]=view.position[0]+(float)(mouse.x-320)/32.0f;
         vec[1]=view.position[1]+(float)(240-mouse.y)/32.0f;
         vec[2]=0.0f;
-  
+
         editor.objectnum=-1;
-  
+
         for (count=0;count<level.numofobjects;count++)
           {
           subtractvectors(vec2,vec,level.object[count].position);
@@ -310,15 +318,15 @@ void editlevelobjects(void)
         if (keyboard[SCAN_LEFT] && !prevkeyboard[SCAN_LEFT])
         if (level.object[editor.objectnum].size[0]>vec[0])
           level.object[editor.objectnum].size[0]-=vec[0];
-    
+
         if (keyboard[SCAN_RIGHT] && !prevkeyboard[SCAN_RIGHT])
         if (level.object[editor.objectnum].size[0]<16.0f)
           level.object[editor.objectnum].size[0]+=vec[0];
-  
+
         if (keyboard[SCAN_DOWN] && !prevkeyboard[SCAN_DOWN])
         if (level.object[editor.objectnum].size[1]>vec[0])
           level.object[editor.objectnum].size[1]-=vec[0];
-    
+
         if (keyboard[SCAN_UP] && !prevkeyboard[SCAN_UP])
         if (level.object[editor.objectnum].size[1]<16.0f)
           level.object[editor.objectnum].size[1]+=vec[0];
@@ -342,7 +350,7 @@ void editlevelobjects(void)
             level.object[editor.objectnum].texturenum=255;
           }
         }
-  
+
       if (keyboard[SCAN_Q] && !prevkeyboard[SCAN_Q])
         {
         if (!keyboard[SCAN_SHIFT])
@@ -409,6 +417,8 @@ void renderlevelobjects(void)
 
       for (count2=0;count2<16;count2++)
         {
+#if defined(USE_GLES)
+#else
         glBegin(GL_TRIANGLES);
 
         glColor4f(0.0f,0.0f,0.0f,1.0f);
@@ -428,6 +438,7 @@ void renderlevelobjects(void)
         glVertex3fv(level.object[count].position);
 
         glEnd();
+#endif
         }
 
       glEnable(GL_TEXTURE_2D);
@@ -435,7 +446,9 @@ void renderlevelobjects(void)
     if (level.object[count].type>=2 && level.object[count].type<=5)
       {
       glBindTexture(GL_TEXTURE_2D,texture[level.object[count].texturenum+256].glname);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -453,6 +466,7 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-level.object[count].size[0]*0.5f,level.object[count].position[1]-level.object[count].size[1]*0.5f,0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type==6 || level.object[count].type==7 || level.object[count].type==17)
       {
@@ -460,6 +474,8 @@ void renderlevelobjects(void)
 
       for (count2=0;count2<16;count2++)
         {
+#if defined(USE_GLES)
+#else
         glBegin(GL_TRIANGLES);
 
         glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -482,12 +498,14 @@ void renderlevelobjects(void)
         glVertex3fv(level.object[count].position);
 
         glEnd();
+#endif
         }
       }
     if (level.object[count].type==8)
       {
       glBindTexture(GL_TEXTURE_2D,texture[level.object[count].texturenum+256].glname);
-  
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -505,11 +523,14 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-0.25f,level.object[count].position[1]-0.25f,0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type==9 || level.object[count].type==10)
       {
       glBindTexture(GL_TEXTURE_2D,texture[level.object[count].texturenum+256].glname);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -527,11 +548,14 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-0.5f,level.object[count].position[1],0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type>=20 && level.object[count].type<40)
       {
       glBindTexture(GL_TEXTURE_2D,texture[animation[level.object[count].type-20].stand[0]].glname);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -549,18 +573,21 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-level.object[count].size[0]*0.5f,level.object[count].position[1]-level.object[count].size[1]*0.5f,0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type==11)
       {
       glBindTexture(GL_TEXTURE_2D,texture[level.object[count].texturenum+256].glname);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
 
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(level.object[count].position[0]-0.125f,level.object[count].position[1]+0.5f,0.0f);
-                                                   
+
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(level.object[count].position[0]+0.125f,level.object[count].position[1]+0.5f,0.0f);
 
@@ -571,18 +598,21 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-0.25f,level.object[count].position[1]-0.5f,0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type==12)
       {
       glBindTexture(GL_TEXTURE_2D,texture[level.object[count].texturenum+256].glname);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
 
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(level.object[count].position[0]-0.5f,level.object[count].position[1]+0.25f,0.0f);
-                                                   
+
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(level.object[count].position[0]+0.5f,level.object[count].position[1]+0.125f,0.0f);
 
@@ -593,18 +623,21 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-0.5f,level.object[count].position[1]-0.25f,0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type==13)
       {
       glBindTexture(GL_TEXTURE_2D,texture[level.object[count].texturenum+256].glname);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
 
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(level.object[count].position[0]-0.25f,level.object[count].position[1]+0.5f,0.0f);
-                                                   
+
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(level.object[count].position[0]+0.25f,level.object[count].position[1]+0.5f,0.0f);
 
@@ -615,18 +648,21 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-0.125f,level.object[count].position[1]-0.5f,0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type==14)
       {
       glBindTexture(GL_TEXTURE_2D,texture[level.object[count].texturenum+256].glname);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_QUADS);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
 
       glTexCoord2f(0.0f,0.0f);
       glVertex3f(level.object[count].position[0]-0.5f,level.object[count].position[1]+0.125f,0.0f);
-                                                   
+
       glTexCoord2f(1.0f,0.0f);
       glVertex3f(level.object[count].position[0]+0.5f,level.object[count].position[1]+0.25f,0.0f);
 
@@ -637,11 +673,14 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-0.5f,level.object[count].position[1]-0.125f,0.0f);
 
       glEnd();
+#endif
       }
     if (level.object[count].type==15 || level.object[count].type==16 || level.object[count].type==18)
       {
       glDisable(GL_TEXTURE_2D);
-  
+
+#if defined(USE_GLES)
+#else
       glBegin(GL_LINES);
 
       glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -659,10 +698,13 @@ void renderlevelobjects(void)
       glVertex3f(level.object[count].position[0]-level.object[count].size[0]*0.5f,level.object[count].position[1]+level.object[count].size[1]*0.5f,0.0f);
 
       glEnd();
-
+#endif
       glEnable(GL_TEXTURE_2D);
       }
     glDisable(GL_TEXTURE_2D);
+
+#if defined(USE_GLES)
+#else
     glBegin(GL_LINES);
 
     glColor4f(0.5f,0.5f,0.5f,1.0f);
@@ -695,11 +737,14 @@ void renderlevelobjects(void)
     glVertex3fv(vec);
 
     glEnd();
+#endif
     glEnable(GL_TEXTURE_2D);
     }
 
   glDisable(GL_TEXTURE_2D);
 
+#if defined(USE_GLES)
+#else
   glBegin(GL_LINES);
 
   for (count=0;count<level.numofropes;count++)
@@ -796,7 +841,7 @@ void renderlevelobjects(void)
     }
 
   glEnd();
-
+#endif
   glEnable(GL_TEXTURE_2D);
   }
 

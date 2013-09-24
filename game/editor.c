@@ -78,7 +78,11 @@ void editlevel(void)
     glStencilMask(0);
 
     setuptextdisplay();
+#if defined(USE_GLES)
+    glColor4f(level.ambient[3][0], level.ambient[3][1], level.ambient[3][2], 1.0f);
+#else
     glColor3fv(level.ambient[3]);
+#endif
     if (level.background[0]!=0)
       displaybackground(660);
 
@@ -146,7 +150,10 @@ void editlevel(void)
 
     for (count=0;count<8;count++)
       {
+#if defined(USE_GLES)
+#else
       glBegin(GL_LINES);
+#endif
 
       if (count==0)
         glColor4f(0.0f,1.0f,0.0f,1.0f);
@@ -164,7 +171,9 @@ void editlevel(void)
         glColor4f(0.5f,0.5f,0.0f,1.0f);
       if (count==7)
         glColor4f(0.5f,0.0f,0.5f,1.0f);
-  
+
+#if defined(USE_GLES)
+#else
       glVertex3f(level.area[count][0],level.area[count][1],0.0f);
       glVertex3f(level.area[count][2],level.area[count][1],0.0f);
 
@@ -178,6 +187,7 @@ void editlevel(void)
       glVertex3f(level.area[count][0],level.area[count][1],0.0f);
 
       glEnd();
+#endif
       }
     glEnable(GL_TEXTURE_2D);
 
@@ -185,6 +195,8 @@ void editlevel(void)
 
     glBindTexture(GL_TEXTURE_2D,texture[editor.blocknum].glname);
 
+#if defined(USE_GLES)
+#else
     glBegin(GL_QUADS);
 
     glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -214,7 +226,7 @@ void editlevel(void)
     glVertex3f(vec[0],vec[1],-1.0f);
 
     glEnd();
-
+#endif
     if (editor.mode==0)
       drawtext(TXT_BACKGROUND,0,384,16,1.0f,1.0f,1.0f,1.0f);
     if (editor.mode==1)
@@ -230,7 +242,11 @@ void editlevel(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (!menuinputkeyboard)
       {
@@ -241,7 +257,7 @@ void editlevel(void)
 
       x=view.position[0]+(float)(mouse.x-320)/32.0f;
       y=view.position[1]+(float)(240-mouse.y)/32.0f;
-  
+
       if (!editor.paste)
         {
         if (!keyboard[SCAN_SHIFT])
@@ -320,7 +336,7 @@ void editlevel(void)
           for (count=0;count<=editor.copysize[1];count++)
           for (count2=0;count2<=editor.copysize[0];count2++)
             editor.copybuffer[count][count2]=getblock(editor.editarea[0][0]+count2,editor.editarea[0][1]+count);
-    
+
           editor.paste=1;
           editor.editstart[0]=0;
           editor.editstart[1]=0;
@@ -386,7 +402,7 @@ void editlevel(void)
       if (keyboard[SCAN_RGT_BRACKET] && !prevkeyboard[SCAN_RGT_BRACKET])
       if (level.tileset<7)
         level.tileset++;
-  
+
       if (keyboard[SCAN_1])
         editor.mode=0;
       if (keyboard[SCAN_2])
@@ -513,8 +529,12 @@ void rendereditblocks(void)
   //float vec[3];
 
   glDisable(GL_TEXTURE_2D);
-
+#if defined(USE_GLES)
+    GLfloat vtx[24];
+    glEnableClientState(GL_VERTEX_ARRAY);
+#else
   glBegin(GL_LINES);
+#endif
 
   glColor4f(1.0f,1.0f,1.0f,1.0f);
 
@@ -523,17 +543,31 @@ void rendereditblocks(void)
     for (count=editor.editarea[0][1];count<=editor.editarea[1][1];count++)
     for (count2=editor.editarea[0][0];count2<=editor.editarea[1][0];count2++)
       {
+#if defined(USE_GLES)
+    vtx[0] = (float)count2+0.0f; vtx[1] = (float)count+1.0f; vtx[2] = 0.0f;
+    vtx[3] = (float)count2+1.0f; vtx[4] = (float)count+1.0f; vtx[5] = 0.0f;
+
+    vtx[6] = (float)count2+1.0f; vtx[7] = (float)count+1.0f; vtx[8] = 0.0f;
+    vtx[9] = (float)count2+1.0f; vtx[10] = (float)count+0.0f; vtx[11] = 0.0f;
+
+    vtx[12] = (float)count2+1.0f; vtx[13] = (float)count+0.0f; vtx[14] = 0.0f;
+    vtx[15] = (float)count2+0.0f; vtx[16] = (float)count+0.0f; vtx[17] = 0.0f;
+
+    vtx[18] = (float)count2+0.0f; vtx[19] = (float)count+0.0f; vtx[20] = 0.0f;
+    vtx[21] = (float)count2+0.0f; vtx[22] = (float)count+1.0f; vtx[23] = 0.0f;
+#else
       glVertex3f((float)count2+0.0f,(float)count+1.0f,0.0f);
       glVertex3f((float)count2+1.0f,(float)count+1.0f,0.0f);
-  
+
       glVertex3f((float)count2+1.0f,(float)count+1.0f,0.0f);
       glVertex3f((float)count2+1.0f,(float)count+0.0f,0.0f);
-  
+
       glVertex3f((float)count2+1.0f,(float)count+0.0f,0.0f);
       glVertex3f((float)count2+0.0f,(float)count+0.0f,0.0f);
-  
+
       glVertex3f((float)count2+0.0f,(float)count+0.0f,0.0f);
       glVertex3f((float)count2+0.0f,(float)count+1.0f,0.0f);
+#endif
       }
     }
   else
@@ -544,21 +578,38 @@ void rendereditblocks(void)
     for (count=0;count<=editor.copysize[1];count++)
     for (count2=0;count2<=editor.copysize[0];count2++)
       {
+#if defined(USE_GLES)
+      vtx[0] = (float)(x+count2)+0.0f; vtx[1] = (float)(y+count)+1.0f; vtx[2] = 0.0f;
+      vtx[3] = (float)(x+count2)+1.0f; vtx[4] = (float)(y+count)+1.0f; vtx[5] = 0.0f;
+
+      vtx[6] = (float)(x+count2)+1.0f; vtx[7] = (float)(y+count)+1.0f; vtx[8] = 0.0f;
+      vtx[9] = (float)(x+count2)+1.0f; vtx[10] = (float)(y+count)+0.0f; vtx[11] = 0.0f;
+
+      vtx[12] = (float)(x+count2)+1.0f; vtx[13] = (float)(y+count)+0.0f; vtx[14] = 0.0f;
+      vtx[15] = (float)(x+count2)+0.0f; vtx[16] = (float)(y+count)+0.0f; vtx[17] = 0.0f;
+
+      vtx[18] = (float)(x+count2)+0.0f; vtx[19] = (float)(y+count)+0.0f; vtx[20] = 0.0f;
+      vtx[21] = (float)(x+count2)+0.0f; vtx[22] = (float)(y+count)+1.0f; vtx[23] = 0.0f;
+#else
       glVertex3f((float)(x+count2)+0.0f,(float)(y+count)+1.0f,0.0f);
       glVertex3f((float)(x+count2)+1.0f,(float)(y+count)+1.0f,0.0f);
-  
+
       glVertex3f((float)(x+count2)+1.0f,(float)(y+count)+1.0f,0.0f);
       glVertex3f((float)(x+count2)+1.0f,(float)(y+count)+0.0f,0.0f);
-  
+
       glVertex3f((float)(x+count2)+1.0f,(float)(y+count)+0.0f,0.0f);
       glVertex3f((float)(x+count2)+0.0f,(float)(y+count)+0.0f,0.0f);
-  
+
       glVertex3f((float)(x+count2)+0.0f,(float)(y+count)+0.0f,0.0f);
       glVertex3f((float)(x+count2)+0.0f,(float)(y+count)+1.0f,0.0f);
+#endif
       }
     }
-  glEnd();
 
+#if defined(USE_GLES)
+#else
+  glEnd();
+#endif
   glEnable(GL_TEXTURE_2D);
   }
 
@@ -666,7 +717,7 @@ void editblock(void)
           y=32;
         vec[0]=(float)x/32.0f;
         vec[1]=1.0f-(float)y/32.0f;
-  
+
         block[editor.blocknum].line[block[editor.blocknum].numoflines][0]=vec[0];
         block[editor.blocknum].line[block[editor.blocknum].numoflines][1]=vec[1];
         }
@@ -682,7 +733,7 @@ void editblock(void)
         y=32;
       vec[0]=(float)x/32.0f;
       vec[1]=1.0f-(float)y/32.0f;
-  
+
       block[editor.blocknum].line[block[editor.blocknum].numoflines][2]=vec[0];
       block[editor.blocknum].line[block[editor.blocknum].numoflines][3]=vec[1];
       block[editor.blocknum].line[block[editor.blocknum].numoflines][4]=friction;
@@ -696,9 +747,12 @@ void editblock(void)
     setuptextdisplay();
 
     glDisable(GL_TEXTURE_2D);
-  
+#if defined(USE_GLES)
+    GLfloat vtx[12];
+    glEnableClientState(GL_VERTEX_ARRAY);
+#else
     glBegin(GL_LINES);
-
+#endif
 
     glColor4f(0.0f,1.0f,0.0f,1.0f);
 
@@ -707,30 +761,50 @@ void editblock(void)
       vec[0]=16.0f;
       vec[1]=32.0f+96.0f*(float)count;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    vtx[0] = vec[0]; vtx[1] = vec[1]; vtx[2] = -1.0f;
+#else
       glVertex3f(vec[0],vec[1],-1.0f);
-  
+#endif
+
       vec[0]=32.0f+400.0f;
       vec[1]=32.0f+96.0f*(float)count;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    vtx[3] = vec[0]; vtx[4] = vec[1]; vtx[5] = -1.0f;
+#else
       glVertex3f(vec[0],vec[1],-1.0f);
+#endif
 
       vec[0]=32.0f+96.0f*(float)count;
       vec[1]=16.0f;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    vtx[6] = vec[0]; vtx[7] = vec[1]; vtx[8] = -1.0f;
+#else
       glVertex3f(vec[0],vec[1],-1.0f);
-  
+#endif
+
       vec[0]=32.0f+96.0f*(float)count;
       vec[1]=32.0f+400.0f;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    vtx[9] = vec[0]; vtx[10] = vec[1]; vtx[11] = -1.0f;
+#else
       glVertex3f(vec[0],vec[1],-1.0f);
+#endif
       }
+#if defined(USE_GLES)
+#else
     glEnd();
-  
+#endif
     glEnable(GL_TEXTURE_2D);
 
 
     glBindTexture(GL_TEXTURE_2D,texture[999].glname);
 
+#if defined(USE_GLES)
+#else
     glBegin(GL_QUADS);
 
     glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -760,12 +834,17 @@ void editblock(void)
     glVertex3f(vec[0],vec[1],-1.0f);
 
     glEnd();
-
+#endif
 
     glDisable(GL_TEXTURE_2D);
-  
+
+#if defined(USE_GLES)
+    //GLfloat vtx[12];
+    glEnableClientState(GL_VERTEX_ARRAY);
+#else
     glBegin(GL_LINES);
-  
+#endif
+
     if (mouse.x<464)
     if (mouse.lmb)
       block[editor.blocknum].numoflines++;
@@ -777,22 +856,32 @@ void editblock(void)
       vec[0]=32.0f+block[editor.blocknum].line[count][0]*384.0f;
       vec[1]=32.0f+384.0f-block[editor.blocknum].line[count][1]*384.0f;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    vtx[0] = vec[0]; vtx[1] = vec[1]; vtx[2] = -1.0f;
+#else
       glVertex3f(vec[0],vec[1],-1.0f);
+#endif
 
-      glColor4f(0.0f,0.0f,1.0f,1.0f);
+      glColor4f(0.0f,0.0f,1.0f,1.0f);   // USE_GLES might need to add a color array per point
 
       vec[0]=32.0f+block[editor.blocknum].line[count][2]*384.0f;
       vec[1]=32.0f+384.0f-block[editor.blocknum].line[count][3]*384.0f;
       convertscreenvertex(vec,font.sizex,font.sizey);
+#if defined(USE_GLES)
+    vtx[0] = vec[0]; vtx[1] = vec[1]; vtx[2] = -1.0f;
+#else
       glVertex3f(vec[0],vec[1],-1.0f);
+#endif
       }
 
     if (mouse.x<464)
     if (mouse.lmb)
       block[editor.blocknum].numoflines--;
 
+#if defined(USE_GLES)
+#else
     glEnd();
-  
+#endif
     glEnable(GL_TEXTURE_2D);
 
     drawtext(TXT_LINES":/i",0,432,12,1.0f,1.0f,1.0f,1.0f,block[editor.blocknum].numoflines);
@@ -802,7 +891,11 @@ void editblock(void)
 
     drawmousecursor(768+font.cursornum,mouse.x,mouse.y,16,1.0f,1.0f,1.0f,1.0f);
 
+#if defined(USE_GLES)
+    EGL_SwapBuffers();
+#else
     SDL_GL_SwapBuffers();
+#endif
 
     if (keyboard[SCAN_A] && !prevkeyboard[SCAN_A])
       {
@@ -822,7 +915,7 @@ void editblock(void)
         if (!bigendian)
         if ((texture[editor.blocknum].rgba[0][count*texture[editor.blocknum].sizex+count2]&0xFF000000)!=0xFF000000)
           texture[editor.blocknum].isalpha=1;
-  
+
         if (bigendian)
         if ((texture[editor.blocknum].rgba[0][count*texture[editor.blocknum].sizex+count2]&0x000000FF)!=0x000000FF)
           texture[editor.blocknum].isalpha=1;
@@ -877,12 +970,12 @@ void editblock(void)
       setuptexture(999);
       /*
       changeddir=changetilesetdir();
-    
+
       filename[4]=48+(editor.blocknum/100)%10;
       filename[5]=48+(editor.blocknum/10)%10;
       filename[6]=48+editor.blocknum%10;
       loadtexturetga(999,filename,0,GL_CLAMP,GL_CLAMP,GL_NEAREST,GL_NEAREST);
-    
+
       if (changeddir==0)
         chdir("..");
       */
@@ -903,12 +996,12 @@ void editblock(void)
 
       /*
       changeddir=changetilesetdir();
-    
+
       filename[4]=48+(editor.blocknum/100)%10;
       filename[5]=48+(editor.blocknum/10)%10;
       filename[6]=48+editor.blocknum%10;
       loadtexturetga(999,filename,0,GL_CLAMP,GL_CLAMP,GL_NEAREST,GL_NEAREST);
-    
+
       if (changeddir==0)
         chdir("..");
       */
@@ -952,6 +1045,8 @@ void renderlevellines(void)
 
   glDisable(GL_TEXTURE_2D);
 
+#if defined(USE_GLES)
+#else
   glBegin(GL_LINES);
 
   glColor4f(0.0f,0.0f,1.0f,1.0f);
@@ -976,6 +1071,7 @@ void renderlevellines(void)
     }
 
   glEnd();
+#endif
 
   glEnable(GL_TEXTURE_2D);
   }

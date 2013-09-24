@@ -45,10 +45,17 @@ void checksystemmessages(void)
         {
         if (event.active.gain==1)
           {
+#if defined(USE_GLES)
+    if (windowinfo.fullscreen)
+      SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_SWSURFACE|SDL_FULLSCREEN);
+    else
+      SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_SWSURFACE);
+#else
           if (windowinfo.fullscreen)
             SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL|SDL_FULLSCREEN);
           else
             SDL_SetVideoMode(windowinfo.resolutionx,windowinfo.resolutiony,windowinfo.bitsperpixel,SDL_OPENGL);
+#endif
 
           for (count=0;count<2048;count++)
             if (texture[count].sizex!=0)
