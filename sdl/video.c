@@ -45,6 +45,12 @@ void listvideomodes(void)
 
   if (sdlmode==(SDL_Rect **)-1)
     {
+#if defined(GCW)
+    sdlvideomode[numofsdlvideomodes].resolutionx=320;
+    sdlvideomode[numofsdlvideomodes].resolutiony=240;
+    sdlvideomode[numofsdlvideomodes].bitsperpixel=16;
+    numofsdlvideomodes++;
+#endif
     sdlvideomode[numofsdlvideomodes].resolutionx=640;
     sdlvideomode[numofsdlvideomodes].resolutiony=480;
     sdlvideomode[numofsdlvideomodes].bitsperpixel=32;

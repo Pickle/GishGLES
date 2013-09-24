@@ -48,7 +48,11 @@ _config config;
 char* userpath(char *result, char *path)
   {
 #ifdef LINUX
+#if defined(PANDORA)
+  char *home=getenv("PWD");
+#else
   char *home=getenv("HOME");
+#endif
 
   if (!home)
     return path;
@@ -74,10 +78,22 @@ void loadconfig(void)
   char tempstr[32];
   char path[PATH_MAX];
 
+#if defined(PANDORA)
+  config.resolutionx=800;
+  config.resolutiony=480;
+  config.bitsperpixel=16;
+  config.depthbits=16;
+#elif defined(GCW)
+  config.resolutionx=320;
+  config.resolutiony=240;
+  config.bitsperpixel=16;
+  config.depthbits=16;
+#else
   config.resolutionx=800;
   config.resolutiony=600;
   config.bitsperpixel=32;
   config.depthbits=24;
+#endif
   config.stencilbits=8;
   config.fullscreen=0;
   config.sound=1;

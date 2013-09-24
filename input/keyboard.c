@@ -35,6 +35,47 @@ void checkkeyboard(void)
   memcpy(prevkeyboard,keyboard,323);
 
   memcpy(keyboard,SDL_GetKeyState(NULL),323);
+#if defined(PANDORA)
+  if (keyboard[SDLK_HOME]) {
+        keyboard[SDLK_HOME] = 0;
+        keyboard[SDLK_a] = 1;
+  }
+
+  if (keyboard[SDLK_END]) {
+        keyboard[SDLK_END] = 0;
+        keyboard[SDLK_b] = 1;
+  }
+
+  if (keyboard[SDLK_PAGEUP]) {
+        keyboard[SDLK_PAGEUP] = 0;
+        keyboard[SDLK_c] = 1;
+  }
+
+  if (keyboard[SDLK_PAGEDOWN]) {
+        keyboard[SDLK_PAGEDOWN] = 0;
+        keyboard[SDLK_d] = 1;
+  }
+#elif defined(GCW)
+  if (keyboard[SDLK_SPACE]) {
+        keyboard[SDLK_SPACE] = 0;
+        keyboard[SDLK_a] = 1;
+  }
+
+  if (keyboard[SDLK_LSHIFT]) {
+        keyboard[SDLK_LSHIFT] = 0;
+        keyboard[SDLK_SPACE] = 1;
+  }
+
+  if (keyboard[SDLK_LCTRL]) {
+        keyboard[SDLK_LCTRL] = 0;
+        keyboard[SDLK_s] = 1;
+  }
+
+  if (keyboard[SDLK_LALT]) {
+        keyboard[SDLK_LALT] = 0;
+        keyboard[SDLK_d] = 1;
+  }
+#endif
 
   if (keyboard[SDLK_KP_ENTER])
     keyboard[SDLK_RETURN]=1;
