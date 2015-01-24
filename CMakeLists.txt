@@ -11,6 +11,7 @@ find_package(OpenGL REQUIRED)
 find_package(Vorbis REQUIRED)
 find_package(PNG REQUIRED)
 
+find_library(M_LIB m)
 
 include_directories(
     ${SDL_INCLUDE_DIR}
@@ -152,4 +153,5 @@ target_link_libraries(gish
     ${OPENGL_LIBRARIES}
     ${Vorbis_LIBRARIES}
     ${PNG_LIBRARIES}
+    ${M_LIB}
 )
